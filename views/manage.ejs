@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title %></title>
+    <link rel="stylesheet" href="css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous" />
+    <script src="js/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="js/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous" />
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <%- include('navbar.ejs') %>
+
+    <div class="container manage-page">
+
+        <!-- Header -->
+        <div class="manage-header">
+            <div>
+                <h2 class="page-title">จัดการสินค้า</h2>
+                <p class="page-subtitle">เพิ่ม ลบ แก้ไขข้อมูลในฐานข้อมูล</p>
+            </div>
+            <a href="/addForm" class="btn-add">
+                เพิ่มสินค้า
+            </a>
+        </div>
+
+        <!-- Search -->
+        <div class="search-wrap">
+            
+            <input type="text" id="searchInput" class="search-input" placeholder="ค้นหาสินค้า...">
+        </div>
+
+        <!-- Table -->
+        <div class="table-card">
+            <table class="table" id="productTableWrapper">
+                <thead>
+                    <tr>
+                        <th>รูปภาพ</th>
+                        <th>ชื่อสินค้า</th>
+                        <th>ราคา</th>
+                        <th>ส่วนลด</th>
+                        <th>จำนวน</th>
+                        <th>รายละเอียด</th>
+                        <th>แสดง</th>
+                        <th colspan="2" style="text-align:center;">จัดการ</th>
+                    </tr>
+                </thead>
+                <tbody id="productTable">
+                    <% Object.values(products).forEach(function(item){ %>
+                    <tr>
+                        <td>
+                            <img src="./images/products/<%= item.image %>" alt="<%= item.name %>" class="product-thumb">
+                        </td>
+                        <td class="name product-name-cell"><%= item.name %></td>
+                        <td class="price"><%= item.price.toLocaleString() %> บาท</td>
+                        <td class="discount">
+                            <% if(item.discount){ %>
+                            <span class="discount-pill"><%= item.discount %>%</span>
+                            <% } else { %>
+                            <span class="no-discount">—</span>
+                            <% } %>
+                        </td>
+                        <td class="stock">
+                            <% if(item.stock > 0){ %>
+                            <span class="stock-in"><%= item.stock %> ชิ้น</span>
+                            <% } else { %>
+                            <span class="stock-out">หมด</span>
+                            <% } %>
+                        </td>
+
+                        <td class="description desc-cell"><%= item.description %></td>
+
+                        <td>
+                            <form action="/toggle/<%= item._id %>" method="POST">
+                                <button type="submit" class="toggle-btn <%= item.active !== false ? 'toggle-on' : 'toggle-off' %>">
+                                    <span class="toggle-track">
+                                        <span class="toggle-thumb"></span>
+                                    </span>
+                                    <span class="toggle-label">
+                                        <%= item.active !== false ? 'เปิด' : 'ปิด' %>
+                                    </span>
+                                </button>
+                            </form>
+                        </td>
+                        
+                        <td>
+                            <a class="btn-action btn-delete" href="/delete/<%= item._id %>"
+                                onclick="return confirm('คุณต้องการลบสินค้านี้หรือไม่?')">
+                                ลบ
+                            </a>
+                        </td>
+                        
+                        <td>
+                            <form action="/edit" method="POST">
+                                <input type="hidden" value="<%= item._id %>" name="id">
+                                <button type="submit" class="btn-action btn-edit">
+                                    แก้ไข
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <script>
+        document.getElementById("searchInput").addEventListener("keyup", function () {
+            let filter = this.value.toLowerCase();
+            let rows = document.querySelectorAll("#productTable tr");
+            rows.forEach(row => {
+                let name = row.querySelector(".name").textContent.toLowerCase();
+                let price = row.querySelector(".price").textContent.toLowerCase();
+                let description = row.querySelector(".description").textContent.toLowerCase();
+                row.style.display = (name.includes(filter) || price.includes(filter) || description.includes(filter)) ? "" : "none";
+            });
+        });
+    </script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600&family=Playfair+Display:wght@500&display=swap');
+
+        body { background: #faf8f5; font-family: 'Sarabun', sans-serif; }
+
+        .manage-page { padding: 40px 48px 60px; }
+
+        /* Header */
+        .manage-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .page-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            font-weight: 500;
+            color: #1a1814;
+            margin-bottom: 4px;
+            position: relative;
+            padding-bottom: 12px;
+        }
+
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 36px; height: 2px;
+            background: #c8602a;
+            border-radius: 2px;
+        }
+
+        .page-subtitle {
+            color: #7a7570;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .btn-add {
+            background: #1a1814;
+            color: #fff;
+            border-radius: 10px;
+            padding: 10px 22px;
+            font-family: 'Sarabun', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: background 0.2s, transform 0.15s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            white-space: nowrap;
+        }
+
+        .btn-add:hover {
+            background: #c8602a;
+            color: #fff;
+            text-decoration: none;
+            transform: translateY(-1px);
+        }
+
+        /* Search */
+        .search-wrap {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #b0a89f;
+            font-size: 0.9rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px 12px 42px;
+            border: 1.5px solid #e8e2da;
+            border-radius: 12px;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 0.95rem;
+            color: #1a1814;
+            background: #fff;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #c8602a;
+            box-shadow: 0 0 0 3px rgba(200,96,42,0.1);
+        }
+
+        .search-input::placeholder { color: #b0a89f; }
+
+        /* Table Card */
+        .table-card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+            overflow: hidden;
+        }
+
+        .table { margin-bottom: 0; }
+
+        .table thead tr { background: #faf8f5; }
+
+        .table thead th {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #7a7570;
+            border-bottom: 2px solid #e8e2da;
+            border-top: none;
+            padding: 14px 16px;
+            white-space: nowrap;
+        }
+
+        .table tbody td {
+            padding: 14px 16px;
+            vertical-align: middle;
+            font-size: 0.92rem;
+            color: #1a1814;
+            border-color: #f0ebe4;
+        }
+
+        .table tbody tr { transition: background 0.15s ease; }
+        .table tbody tr:hover { background: #fdf7f4; }
+
+        /* Product image */
+        .product-thumb {
+            width: 52px;
+            height: 52px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1.5px solid #e8e2da;
+        }
+
+        .product-name-cell { font-weight: 600; white-space: nowrap; }
+
+        .desc-cell {
+            max-width: 180px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #7a7570;
+            font-size: 0.85rem;
+        }
+
+        /* Badges */
+        .discount-pill {
+            background: #fdecea;
+            color: #c0392b;
+            border-radius: 20px;
+            padding: 3px 10px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .no-discount { color: #ccc; }
+
+        .stock-in {
+            background: #eaf5ef;
+            color: #2d7a4f;
+            border-radius: 20px;
+            padding: 3px 10px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .stock-out {
+            background: #fdecea;
+            color: #c0392b;
+            border-radius: 20px;
+            padding: 3px 10px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* Action buttons */
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: opacity 0.2s, transform 0.15s;
+        }
+        /* Toggle Switch */
+        .toggle-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px 0;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 600;
+        }
+
+        .toggle-track {
+            width: 40px;
+            height: 22px;
+            border-radius: 99px;
+            background: #e8e2da;
+            position: relative;
+            transition: background 0.25s ease;
+            flex-shrink: 0;
+        }
+
+        .toggle-thumb {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+            transition: left 0.25s ease;
+        }
+
+        .toggle-on .toggle-track { background: #2d7a4f; }
+        .toggle-on .toggle-thumb { left: 21px; }
+        .toggle-on .toggle-label { color: #2d7a4f; }
+
+        .toggle-off .toggle-track { background: #e8e2da; }
+        .toggle-off .toggle-thumb { left: 3px; }
+        .toggle-off .toggle-label { color: #b0a89f; }
+
+        .btn-action:hover { opacity: 0.85; transform: translateY(-1px); text-decoration: none; }
+
+        .btn-delete { background: #fdecea; color: #c0392b; }
+        .btn-edit   { background: #e8f0fe; color: #1a5dc8; }
+
+        @media (max-width: 768px) {
+            .manage-page { padding: 24px 16px 48px; }
+            .desc-cell { display: none; }
+        }
+    </style>
+
+</body>
+</html>

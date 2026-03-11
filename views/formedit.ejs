@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title %></title>
+    <link rel="stylesheet" href="css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous" />
+    <script src="js/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="js/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous" />
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <%- include('navbar.ejs') %>
+
+    <div class="container add-page">
+
+        <div class="add-header">
+          
+            <div>
+                <h2 class="page-title">แก้ไขสินค้า</h2>
+                <p class="page-subtitle">แก้ไขข้อมูลสินค้าที่มีอยู่ในระบบ</p>
+            </div>
+        </div>
+
+        <div class="form-card">
+            <form method="POST" action="/update" enctype="multipart/form-data">
+                <input type="hidden" value="<%= product.id %>" name="id">
+
+                <div class="form-row-group">
+                    <div class="field-half">
+                        <label class="field-label">ชื่อสินค้า</label>
+                        <input type="text" class="field-input" name="name" value="<%= product.name %>">
+                    </div>
+                    <div class="field-half">
+                        <label class="field-label">ราคา (บาท)</label>
+                        <input type="text" class="field-input" name="price" value="<%= product.price %>">
+                    </div>
+                </div>
+
+                <div class="form-row-group">
+                    <div class="field-half">
+                        <label class="field-label">ส่วนลด (%)</label>
+                        <input type="number" class="field-input" name="discount" value="<%= product.discount %>" min="0" max="100">
+                    </div>
+                    <div class="field-half">
+                        <label class="field-label">จำนวน (ชิ้น)</label>
+                        <input type="number" class="field-input" name="stock" value="<%= product.stock %>" min="0">
+                    </div>
+                </div>
+
+                <!-- Image -->
+                <div class="field-full">
+                    <label class="field-label">ภาพสินค้า</label>
+
+                    <!-- Current image -->
+                    <div class="current-image-wrap" id="currentImageWrap">
+                        <img src="./images/products/<%= product.image %>" alt="<%= product.image %>" id="previewImg">
+                        <div class="current-image-overlay">
+                            <button type="button" class="file-change-btn" id="changeBtn">
+                                เปลี่ยนรูป
+                            </button>
+                        </div>
+                        <div class="current-image-name">
+                           <%= product.image %>
+                        </div>
+                    </div>
+
+                    <!-- Drop zone (hidden by default) -->
+                    <div class="file-drop" id="fileDrop" style="display:none;">
+                       
+                        <p class="file-drop-text">คลิกหรือลากไฟล์มาวางที่นี่</p>
+                        <p class="file-drop-hint">PNG, JPG ขนาดไม่เกิน 5MB</p>
+                        <input type="file" name="image" id="fileInput" accept="image/*">
+                    </div>
+
+                </div>
+
+                <div class="field-full">
+                    <label class="field-label">รายละเอียดสินค้า</label>
+                    <textarea class="field-input field-textarea" name="description" rows="4"><%= product.description %></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <a href="/manage" class="btn-cancel">ยกเลิก</a>
+                    <button type="submit" class="btn-save">
+                        บันทึกการแก้ไข
+                    </button>
+                </div>
+
+            </form>
+        </div>
+
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const fileDrop = document.getElementById('fileDrop');
+        const previewImg = document.getElementById('previewImg');
+        const changeBtn = document.getElementById('changeBtn');
+        const currentImageWrap = document.getElementById('currentImageWrap');
+
+        // คลิก "เปลี่ยนรูป" → แสดง drop zone
+        changeBtn.addEventListener('click', () => {
+            currentImageWrap.style.display = 'none';
+            fileDrop.style.display = 'flex';
+        });
+
+        // คลิก drop zone → เปิด file picker
+        fileDrop.addEventListener('click', () => fileInput.click());
+
+        fileDrop.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileDrop.classList.add('drag-over');
+        });
+
+        fileDrop.addEventListener('dragleave', () => fileDrop.classList.remove('drag-over'));
+
+        fileDrop.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileDrop.classList.remove('drag-over');
+            if (e.dataTransfer.files[0]) showPreview(e.dataTransfer.files[0]);
+        });
+
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files[0]) showPreview(fileInput.files[0]);
+        });
+
+        function showPreview(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImg.src = e.target.result;
+                fileDrop.style.display = 'none';
+                currentImageWrap.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    </script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600&family=Playfair+Display:wght@500&display=swap');
+
+        body { background: #faf8f5; font-family: 'Sarabun', sans-serif; }
+
+        .add-page { max-width: 720px; padding: 40px 24px 60px; }
+
+        .add-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            background: #fff;
+            border: 1.5px solid #e8e2da;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: #1a1814;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: border-color 0.2s, color 0.2s;
+        }
+
+        .btn-back:hover { border-color: #c8602a; color: #c8602a; text-decoration: none; }
+
+        .page-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            font-weight: 500;
+            color: #1a1814;
+            margin: 0 0 4px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 32px; height: 2px;
+            background: #c8602a;
+            border-radius: 2px;
+        }
+
+        .page-subtitle { color: #7a7570; font-size: 0.88rem; margin: 0; }
+
+        .form-card {
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 4px 32px rgba(0,0,0,0.08);
+            padding: 36px 32px;
+        }
+
+        .form-row-group {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .field-half { flex: 1; }
+        .field-full { margin-bottom: 20px; }
+
+        .field-label {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #7a7570;
+            margin-bottom: 8px;
+        }
+
+        .field-input {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1.5px solid #e8e2da;
+            border-radius: 10px;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 0.95rem;
+            color: #1a1814;
+            background: #faf8f5;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .field-input:focus {
+            outline: none;
+            border-color: #c8602a;
+            box-shadow: 0 0 0 3px rgba(200,96,42,0.1);
+            background: #fff;
+        }
+
+        .field-textarea { resize: vertical; min-height: 100px; }
+
+        /* Current image */
+        .current-image-wrap {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1.5px solid #e8e2da;
+        }
+
+        .current-image-wrap img {
+            width: 100%;
+            max-height: 260px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .current-image-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .current-image-wrap:hover .current-image-overlay {
+            background: rgba(0,0,0,0.35);
+        }
+
+        .file-change-btn {
+            background: #fff;
+            color: #1a1814;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-family: 'Sarabun', sans-serif;
+            font-weight: 700;
+            font-size: 0.88rem;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(6px);
+            transition: opacity 0.2s, transform 0.2s;
+        }
+
+        .current-image-wrap:hover .file-change-btn {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .current-image-name {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            background: rgba(0,0,0,0.45);
+            color: rgba(255,255,255,0.85);
+            font-size: 0.78rem;
+            padding: 6px 12px;
+        }
+
+        /* File Drop */
+        .file-drop {
+            border: 2px dashed #e8e2da;
+            border-radius: 12px;
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+            background: #faf8f5;
+            text-align: center;
+        }
+
+        .file-drop:hover, .file-drop.drag-over {
+            border-color: #c8602a;
+            background: #fdf7f4;
+        }
+
+        .file-drop input[type="file"] { display: none; }
+
+        .file-drop-icon { font-size: 2rem; color: #c8b5a8; margin-bottom: 10px; }
+        .file-drop-text { font-weight: 600; color: #1a1814; margin: 0 0 4px; font-size: 0.95rem; }
+        .file-drop-hint { color: #b0a89f; font-size: 0.82rem; margin: 0; }
+
+        /* Actions */
+        .form-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 28px;
+            padding-top: 24px;
+            border-top: 1px solid #f0ebe4;
+        }
+
+        .btn-cancel {
+            padding: 11px 24px;
+            border: 1.5px solid #e8e2da;
+            border-radius: 10px;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: #ffffff;
+            text-decoration: none;
+            transition: border-color 0.2s, color 0.2s;
+        }
+
+        .btn-cancel:hover { border-color: #1a1814; color: #1a1814; text-decoration: none; }
+
+        .btn-save {
+            display: inline-flex;
+            align-items: center;
+            padding: 11px 28px;
+            background: #1a1814;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 0.92rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.15s;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+        }
+
+        .btn-save:hover { background: #c8602a; transform: translateY(-1px); }
+
+        @media (max-width: 600px) {
+            .form-row-group { flex-direction: column; gap: 0; }
+            .form-card { padding: 24px 18px; }
+            .add-page { padding: 24px 16px 48px; }
+        }
+    </style>
+
+</body>
+</html>

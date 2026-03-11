@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>รายงานการขาย</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <script src="/js/jquery-3.4.1.slim.min.js"></script>
+    <script src="/js/popper.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="/css/all.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <%- include('../navbar') %>
+
+    <div class="container report-page">
+
+        <h2 class="page-title">รายงานการขาย</h2>
+
+        <!-- Search -->
+        <form method="GET" action="/orders/report">
+            <div class="search-card">
+                <div>
+                    <label>วันเริ่มต้น</label>
+                    <input type="date" name="startDate" class="form-control"
+                        value="<%= startDate || '' %>">
+                </div>
+                <div class="date-sep">ถึง</div>
+                <div>
+                    <label>วันสิ้นสุด</label>
+                    <input type="date" name="endDate" class="form-control"
+                        value="<%= endDate || '' %>">
+                </div>
+                <button type="submit" class="btn-find">ค้นหา</button>
+                <a href="/orders/report" class="btn-clear">ล้างค้นหา</a>
+            </div>
+        </form>
+
+        <!-- Revenue Summary -->
+        <div class="revenue-card">
+            <div class="revenue-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="1" x2="12" y2="23"/>
+                    <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+                </svg>
+            </div>
+            <div>
+                <div class="revenue-label">รายได้รวม</div>
+                <div class="revenue-amount">
+                    <%= totalRevenue.toLocaleString() %>
+                    <span>บาท</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-card">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>สินค้า</th>
+                        <th>ราคา</th>
+                        <th>จำนวน</th>
+                        <th>รวม</th>
+                        <th>วันที่</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if(orders.length > 0){ %>
+                        <% orders.forEach(order => { %>
+                        <tr>
+                            <td class="product-name"><%= order.product_name %></td>
+                            <td><%= order.price.toLocaleString() %> บาท</td>
+                            <td><%= order.qty %></td>
+                            <td class="total-cell"><%= order.total.toLocaleString() %> บาท</td>
+                            <td class="date-cell">
+             
+                                <%= new Date(order.order_date).toLocaleDateString('th-TH') %>
+                            </td>
+                        </tr>
+                        <% }) %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="5">
+                                <div class="empty-state">
+                              
+                                    <p>ไม่พบรายการสั่งซื้อ</p>
+                                </div>
+                            </td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</body>
+     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600&family=Playfair+Display:wght@500&display=swap');
+
+        body {
+            background-color: #faf8f5;
+            font-family: 'Sarabun', sans-serif;
+        }
+
+        .report-page {
+            padding: 40px 0 60px;
+        }
+
+        /* ===== Header ===== */
+        .page-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            font-weight: 500;
+            color: #1a1814;
+            margin-bottom: 24px;
+            padding-bottom: 14px;
+            position: relative;
+        }
+
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 36px;
+            height: 2px;
+            background: #c8602a;
+            border-radius: 2px;
+        }
+
+        /* ===== Search Card ===== */
+        .search-card {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.07);
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .search-card label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #7a7570;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .search-card .form-control {
+            border: 1.5px solid #e8e2da;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 0.95rem;
+            color: #1a1814;
+            background: #faf8f5;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            min-width: 200px;
+        }
+
+        .search-card .form-control:focus {
+            outline: none;
+            border-color: #c8602a;
+            box-shadow: 0 0 0 3px rgba(200,96,42,0.1);
+        }
+
+        .btn-find {
+            background: #1a1814;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 28px;
+            font-family: 'Sarabun', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+            letter-spacing: 0.04em;
+            transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            align-self: flex-end;
+            margin-bottom: 1px;
+        }
+
+        .btn-find:hover {
+            background: #c8602a;
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(200,96,42,0.28);
+        }
+
+        /* ===== Revenue Summary ===== */
+        .revenue-card {
+            background: linear-gradient(135deg, #2d7a4f 0%, #1e5435 100%);
+            border-radius: 14px;
+            padding: 20px 28px;
+            margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 4px 20px rgba(45,122,79,0.25);
+        }
+
+        .revenue-icon {
+            width: 52px;
+            height: 52px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .revenue-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 4px;
+        }
+
+        .revenue-amount {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 500;
+            color: #fff;
+            line-height: 1;
+        }
+
+        .revenue-amount span {
+            font-family: 'Sarabun', sans-serif;
+            font-size: 1rem;
+            font-weight: 400;
+            opacity: 0.8;
+            margin-left: 6px;
+        }
+
+        /* ===== Table ===== */
+        .table-card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+            overflow: hidden;
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table thead tr {
+            background: #faf8f5;
+        }
+
+        .table thead th {
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #7a7570;
+            border-bottom: 2px solid #e8e2da;
+            border-top: none;
+            padding: 14px 20px;
+        }
+
+        .table tbody td {
+            padding: 14px 20px;
+            vertical-align: middle;
+            font-size: 0.95rem;
+            color: #1a1814;
+            border-color: #f0ebe4;
+        }
+
+        .table tbody tr {
+            transition: background 0.15s ease;
+        }
+
+        .table tbody tr:hover {
+            background: #fdf7f4;
+        }
+
+        .total-cell {
+            font-weight: 700;
+            color: #c8602a !important;
+        }
+
+        .date-cell {
+            color: #7a7570;
+            font-size: 0.88rem;
+        }
+
+        .product-name {
+            font-weight: 600;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+            color: #b0a89f;
+        }
+
+        .empty-state i {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .empty-state p {
+            font-size: 0.95rem;
+        }
+        .report-page {
+            padding: 40px 48px 60px;
+        }
+        .date-sep {
+    color: #7a7570;
+    font-weight: 600;
+    font-size: 0.9rem;
+    align-self: flex-end;
+    margin-bottom: 8px;
+    padding: 0 4px;
+    }
+
+    .btn-clear {
+        background: #f0ebe4;
+        color: #7a7570;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 20px;
+        font-family: 'Sarabun', sans-serif;
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-decoration: none;
+        align-self: flex-end;
+        margin-bottom: 1px;
+        transition: background 0.2s;
+    }
+
+    .btn-clear:hover {
+        background: #e8e2da;
+        color: #1a1814;
+        text-decoration: none;
+    }
+
+        @media (max-width: 768px) {
+            .report-page {
+                padding: 24px 20px 48px;
+            }
+        }
+    </style>
+</html>

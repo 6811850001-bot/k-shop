@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title><%= title %></title>
+        <link rel="stylesheet" href="css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous" />
+        <script src="js/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+        <script src="js/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+        <script src="js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous" />
+        <link rel="stylesheet" href="css/style.css"> 
+    </head>
+
+    <body>
+        <%- include('navbar.ejs') %>
+
+        <div class="container product-page">
+            <div class="row align-items-start g-4">
+
+                <!-- รูปสินค้า -->
+                <div class="col-lg-6">
+                    <div class="product-img-wrap">
+                        <img src="/images/products/<%= product.image %>" alt="<%= product.name %>">
+                    </div>
+                </div>
+
+                <!-- รายละเอียดสินค้า -->
+                <div class="col-lg-6">
+                    <div class="product-detail-card">
+
+                        <h3><%= product.name %></h3>
+
+                        <div style="margin-bottom: 12px;">
+                            <span class="price-final"><%= finalPrice.toLocaleString() %> บาท</span>
+                            <span class="price-original"><%= product.price.toLocaleString() %> บาท</span>
+                        </div>
+
+                        <span class="stock-badge">
+                            เหลือ <%= product.stock %> ชิ้น
+                        </span>
+
+                        <p class="product-description"><%= product.description %></p>
+
+                        <hr class="divider">
+
+                        <form action="orders/checkout" method="POST">
+                            <input type="hidden" name="product_id" value="<%= product._id %>">
+                            <input type="hidden" name="price" value="<%= finalPrice %>">
+                            <input type="hidden" name="qty" id="qty-hidden" value="1">
+
+                            <!-- เลือกไซส์ -->
+                            <div style="margin-bottom: 20px;">
+                                <span class="form-label-custom">เลือกไซส์</span>
+                                <div class="size-options">
+                                    <div class="size-option">
+                                        <input type="radio" name="size" id="size-s" value="S" checked>
+                                        <label for="size-s">S</label>
+                                    </div>
+                                    <div class="size-option">
+                                        <input type="radio" name="size" id="size-m" value="M">
+                                        <label for="size-m">M</label>
+                                    </div>
+                                    <div class="size-option">
+                                        <input type="radio" name="size" id="size-l" value="L">
+                                        <label for="size-l">L</label>
+                                    </div>
+                                    <div class="size-option">
+                                        <input type="radio" name="size" id="size-xl" value="XL">
+                                        <label for="size-xl">XL</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- จำนวน -->
+                            <div style="margin-bottom: 8px;">
+                                <span class="form-label-custom">จำนวน</span>
+                                <div class="qty-wrapper" data-max="<%= product.stock %>">
+                                    <button type="button" class="qty-btn" id="qty-minus">−</button>
+                                    <input type="text" class="qty-input" id="qty-display" value="1" readonly>
+                                    <button type="button" class="qty-btn" id="qty-plus">+</button>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn-buy">
+
+                                สั่งซื้อสินค้า
+                            </button>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const max = parseInt(document.querySelector('.qty-wrapper').dataset.max);
+                let qty = 1;
+                const display = document.getElementById('qty-display');
+                const hidden = document.getElementById('qty-hidden');
+
+                document.getElementById('qty-plus').addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (qty < max) { qty++; update(); }
+                });
+
+                document.getElementById('qty-minus').addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (qty > 1) { qty--; update(); }
+                });
+
+                function update() {
+                    display.value = qty;
+                    hidden.value = qty;
+                }
+            });
+        </script>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600&family=Playfair+Display:wght@500&display=swap');
+
+            .product-page {
+                padding: 40px 48px 60px;
+            }
+
+            @media (max-width: 768px) {
+                .product-page {
+                    padding: 24px 20px 48px;
+                }
+            }
+            /* ===== Image Card ===== */
+            .product-img-wrap {
+                border-radius: 20px;
+                overflow: hidden;
+                box-shadow: 0 8px 40px rgba(0,0,0,0.10);
+                background: #fff;
+                aspect-ratio: 1/1;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .product-img-wrap img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform 0.4s ease;
+            }
+
+            .product-img-wrap:hover img {
+                transform: scale(1.03);
+            }
+
+            /* ===== Detail Card ===== */
+            .product-detail-card {
+                background: #ffffff;
+                border-radius: 20px;
+                box-shadow: 0 4px 40px rgba(0,0,0,0.08);
+                padding: 36px 32px;
+                height: 100%;
+            }
+
+            .product-detail-card h3 {
+                font-family: 'Playfair Display', serif;
+                font-size: 1.7rem;
+                font-weight: 500;
+                color: #1a1814;
+                margin-bottom: 12px;
+            }
+
+            .price-final {
+                font-family: 'Sarabun', sans-serif;
+                font-size: 1.6rem;
+                font-weight: 700;
+                color: #c8602a;
+            }
+
+            .price-original {
+                font-family: 'Sarabun', sans-serif;
+                font-size: 1rem;
+                color: #aaa;
+                text-decoration: line-through;
+                margin-left: 8px;
+            }
+
+            .product-description {
+                font-family: 'Sarabun', sans-serif;
+                color: #7a7570;
+                font-size: 0.95rem;
+                line-height: 1.7;
+                margin-top: 12px;
+            }
+
+            .stock-badge {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                background: #eaf5ef;
+                color: #2d7a4f;
+                border-radius: 20px;
+                padding: 4px 14px;
+                font-family: 'Sarabun', sans-serif;
+                font-size: 0.85rem;
+                font-weight: 600;
+            }
+
+            .stock-badge i {
+                font-size: 0.75rem;
+            }
+
+            .divider {
+                border: none;
+                border-top: 1px solid #e8e2da;
+                margin: 20px 0;
+            }
+
+            /* ===== Form Label ===== */
+            .form-label-custom {
+                font-family: 'Sarabun', sans-serif;
+                font-size: 0.8rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+                color: #7a7570;
+                margin-bottom: 8px;
+                display: block;
+            }
+
+            /* ===== Size Selector ===== */
+            .size-options {
+                display: flex;
+                gap: 10px;
+                margin-bottom: 20px;
+                flex-wrap: wrap;
+            }
+
+            .size-option {
+                position: relative;
+            }
+
+            .size-option input[type="radio"] {
+                display: none;
+            }
+
+            .size-option label {
+                width: 48px;
+                height: 48px;
+                border-radius: 10px;
+                border: 1.5px solid #e8e2da;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-family: 'Sarabun', sans-serif;
+                font-weight: 600;
+                font-size: 0.9rem;
+                color: #1a1814;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                background: #faf8f5;
+            }
+
+            .size-option input:checked + label {
+                border-color: #c8602a;
+                background: #c8602a;
+                color: #fff;
+                box-shadow: 0 4px 12px rgba(200,96,42,0.3);
+            }
+
+            .size-option label:hover {
+                border-color: #c8602a;
+                color: #c8602a;
+            }
+
+            /* ===== Qty Input ===== */
+            .qty-wrapper {
+                display: flex;
+                align-items: center;
+                gap: 0;
+                border: 1.5px solid #e8e2da;
+                border-radius: 10px;
+                overflow: hidden;
+                width: fit-content;
+                background: #fff;
+            }
+
+            .qty-btn {
+                width: 40px;
+                height: 44px;
+                border: none;
+                background: #faf8f5;
+                color: #1a1814;
+                font-size: 1.1rem;
+                cursor: pointer;
+                transition: background 0.15s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .qty-btn:hover {
+                background: #f0e6de;
+                color: #c8602a;
+            }
+
+            .qty-input {
+                width: 56px;
+                height: 44px;
+                border: none;
+                border-left: 1.5px solid #e8e2da;
+                border-right: 1.5px solid #e8e2da;
+                text-align: center;
+                font-family: 'Sarabun', sans-serif;
+                font-size: 1rem;
+                font-weight: 600;
+                color: #1a1814;
+                outline: none;
+            }
+
+            .qty-input::-webkit-inner-spin-button,
+            .qty-input::-webkit-outer-spin-button {
+                -webkit-appearance: none;
+            }
+
+            /* ===== Buy Button ===== */
+            .btn-buy {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+                width: 100%;
+                padding: 16px;
+                background: #1a1814;
+                color: #fff;
+                border: none;
+                border-radius: 12px;
+                font-family: 'Sarabun', sans-serif;
+                font-size: 1rem;
+                font-weight: 700;
+                letter-spacing: 0.05em;
+                cursor: pointer;
+                transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+                box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+                margin-top: 28px;
+            }
+
+            .btn-buy:hover {
+                background: #c8602a;
+                transform: translateY(-1px);
+                box-shadow: 0 6px 24px rgba(200,96,42,0.3);
+            }
+
+            .btn-buy:active {
+                transform: translateY(0);
+            }
+
+            @media (max-width: 768px) {
+                .product-detail-card {
+                    padding: 24px 20px;
+                    margin-top: 20px;
+                }
+            }
+        </style>
+    </body>
+</html>

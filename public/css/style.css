@@ -1,0 +1,376 @@
+/* ===== style.css ===== */
+
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600&family=Playfair+Display:wght@500&display=swap');
+
+:root {
+  --cream: #faf8f5;
+  --warm-white: #ffffff;
+  --text-dark: #1a1814;
+  --text-muted: #7a7570;
+  --accent: #c8602a;
+  --accent-light: #f0e6de;
+  --border: #e8e2da;
+  --success: #2d7a4f;
+  --shadow-soft: 0 2px 20px rgba(0,0,0,0.06);
+  --shadow-card: 0 4px 40px rgba(0,0,0,0.08);
+  --radius: 16px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--cream);
+  font-family: 'Sarabun', sans-serif;
+  color: var(--text-dark);
+  min-height: 100vh;
+  letter-spacing: 0.01em;
+}
+
+/* ===== Container ===== */
+
+/* ===== Heading ===== */
+h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.75rem;
+  font-weight: 500;
+  color: var(--text-dark);
+  margin-bottom: 28px;
+  position: relative;
+  padding-bottom: 16px;
+}
+
+h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 40px;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+/* ===== Summary Card ===== */
+.table {
+  width: 100%;
+  background: var(--warm-white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  margin-bottom: 0;
+}
+
+.table tr {
+  transition: background 0.15s ease;
+}
+
+.table tr:not(:last-child) td,
+.table tr:not(:last-child) th {
+  border-bottom: 1px solid var(--border);
+}
+
+.table th,
+.table td {
+  padding: 18px 24px;
+  font-size: 0.95rem;
+  vertical-align: middle;
+  border: none;
+}
+
+.table th {
+  font-weight: 500;
+  color: var(--text-muted);
+  width: 38%;
+  background: transparent;
+}
+
+.table td {
+  font-weight: 400;
+  color: var(--text-dark);
+}
+
+/* Last row = total — highlight */
+.table tr:last-child {
+  background: var(--accent-light);
+}
+
+.table tr:last-child th {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.table td.text-danger {
+  color: var(--accent) !important;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+/* ===== Divider ===== */
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 32px 0;
+}
+
+/* ===== Payment Section ===== */
+h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.form-control,
+.form-control option {
+  color: #1a1814 !important;
+  background-color: #ffffff !important;
+}
+/* ===== Select ===== */
+.form-control {
+  width: 100%;
+  padding: 14px 18px;
+  font-family: 'Sarabun', sans-serif;
+  font-size: 0.95rem;
+  color: var(--text-dark);
+  background: var(--warm-white);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237a7570' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: var(--shadow-soft);
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(200, 96, 42, 0.12);
+}
+
+/* ===== Button ===== */
+.btn.btn-success {
+  display: block;
+  width: 100%;
+  margin-top: 20px;
+  padding: 16px 24px;
+  background: var(--success);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Sarabun', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 16px rgba(45, 122, 79, 0.25);
+}
+
+.btn.btn-success:hover {
+  background: #236040;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(45, 122, 79, 0.32);
+}
+
+.btn.btn-success:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(45, 122, 79, 0.2);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 600px) {
+  .container.mt-4 {
+    margin: 24px auto;
+    padding: 0 16px 48px;
+  }
+
+  h2 {
+    font-size: 1.45rem;
+  }
+
+  .table th,
+  .table td {
+    padding: 14px 16px;
+  }
+}
+/* สไตล์พื้นฐาน */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+/* กำหนด container ให้เนื้อหาดูเป็นระเบียบ */
+.container {
+    width: 80%;
+    margin: 30px auto;
+    background: white;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+/* สไตล์หัวข้อ */
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+/* ปุ่มเพิ่มการขาย */
+.btn {
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: #28a745;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+.btn:hover {
+    background-color: #218838;
+}
+
+/* ตารางแสดงข้อมูล */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+th,
+td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+th {
+    background-color: #007bff;
+    color: white;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* กำหนดขนาด container */
+.container {
+    width: 50%;
+    margin: 30px auto;
+    background: white;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+/* สไตล์หัวข้อ */
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+/* จัดรูปแบบกล่องป้อนข้อมูล */
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+input,
+select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+/* ปุ่มกด */
+.btn {
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: #10b807;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+/* ปุ่ม Cancel */
+.btn-cancel {
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: #dc3545;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-left: 10px;
+}
+
+.btn-cancel:hover {
+    background-color: #c82333;
+}
+
+/* ฟอร์มกรองช่วงเวลา */
+.date-filter {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.date-filter label {
+    font-weight: bold;
+}
+
+.date-filter input {
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.date-filter button {
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.date-filter button:hover {
+    background-color: #0056b3;
+}
+
+/* กำหนดพื้นที่ว่างด้านบนสำหรับ div.form-group */
+.form-group {
+    margin-top: 20px; /* ปรับค่าตามที่ต้องการ */
+}
+
