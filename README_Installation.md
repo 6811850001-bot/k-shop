@@ -14,11 +14,9 @@ cd k-shop
 ### 2. ติดตั้ง Dependencies
 npm install
 
-### 3. ตั้งค่า Environment Variables
-สร้างไฟล์ .env แล้วใส่ข้อมูลดังนี้
-MONGODB_URI=mongodb://localhost:27017/kshop
-SESSION_SECRET=your_secret_key
-PORT=3000
+### 3. เชื่อมต่อ MongoDB
+ตรวจสอบให้แน่ใจว่าเปิด MongoDB ไว้แล้ว
+จากนั้นเปิดไฟล์ที่มีการเชื่อมต่อ MongoDB แล้วตรวจสอบชื่อ database ให้ถูกต้อง
 
 ### 4. รันโปรเจค
 node app.js
