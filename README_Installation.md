@@ -16,7 +16,15 @@ npm install
 
 ### 3. เชื่อมต่อ MongoDB
 ตรวจสอบให้แน่ใจว่าเปิด MongoDB ไว้แล้ว
-จากนั้นเปิดไฟล์ที่มีการเชื่อมต่อ MongoDB แล้วตรวจสอบชื่อ database ให้ถูกต้อง
+
+- เปิด MongoDB Compass
+- สร้าง Collection ชื่อ **myShop**
+- สร้าง Database ชื่อ **ITMISHOP**
+- ระบบจะสร้าง Collection ให้อัตโนมัติเมื่อมีการใช้งาน ได้แก่
+  - members
+  - products
+  - orders
+  - employees
 
 ### 4. รันโปรเจค
 node app.js
