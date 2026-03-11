@@ -13,6 +13,7 @@ const employeeSchema = new mongoose.Schema({
     },
 
     position: {
+        enum: ["employee", "manager"],
         type: String
     },
 
