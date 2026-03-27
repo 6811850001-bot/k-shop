@@ -2,24 +2,44 @@ const express = require('express')
 const router = express.Router()
 const Order = require('../models/orders')
 const Product = require('../models/products')
+const members = require('../models/members')
 
-router.post('/checkout', async (req,res)=>{
-    const product_id = req.body.product_id
-    const qty = parseInt(req.body.qty)
-    const price = parseInt(req.body.price)
-    const size = req.body.size
-    const product = await Product.findById(product_id)
+router.post('/checkout', async (req, res) => {
+  try {
+    const product_id = req.body.product_id;
+    const qty = parseInt(req.body.qty);
+    const price = parseInt(req.body.price);
+    const size = req.body.size;
 
-    const total = price * qty
+    // ตรวจสอบว่าล็อกอินหรือยัง
+    if (!req.session.user) {
+      return res.status(401).send("กรุณาเข้าสู่ระบบก่อน");
+    }
 
-    res.render('orders/checkout',{
-        product: product,
-        qty: qty,
-        price: price,
-        total: total,
-        size: size
-    })
-})
+    // ตรวจสอบข้อมูล
+    if (!product_id || isNaN(qty) || isNaN(price)) {
+      return res.status(400).send("ข้อมูลไม่ถูกต้อง");
+    }
+
+    // ดึงข้อมูลสินค้า
+    const product = await Product.findById(product_id);
+
+    const total = price * qty;
+
+    res.render('orders/checkout', {
+      member: req.session.user._id,
+      product: product,
+      qty: qty,
+      price: price,
+      total: total,
+      size: size
+    });
+
+  } catch (err) {
+    console.error("Checkout Error:", err);
+    res.status(500).send("เกิดข้อผิดพลาดในระบบ");
+  }
+});
 
 router.post('/payment', async (req,res)=>{
 
@@ -33,6 +53,7 @@ router.post('/payment', async (req,res)=>{
         const newOrder = new Order({
 
             product_id: product_id,
+            member: req.session.user._id,
             product_name: req.body.product_name,
             price: req.body.price,
             qty: qty,
@@ -77,7 +98,7 @@ router.get('/report', async (req, res) => {
                 end.setDate(end.getDate() + 1)
                 query.order_date.$lt = end
             }
-            orders = await Order.find(query)
+            orders = await Order.find(query).populate("member")
 
         } else if (date) {
             // ใช้วันเดียว (เผื่อ backward compatible)
@@ -86,10 +107,10 @@ router.get('/report', async (req, res) => {
             end.setDate(end.getDate() + 1)
             orders = await Order.find({
                 order_date: { $gte: start, $lt: end }
-            })
+            }).populate("member")
 
         } else {
-            orders = await Order.find()
+            orders = await Order.find().populate("member").sort({ order_date: -1 });
         }
 
         let totalRevenue = 0

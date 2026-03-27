@@ -60,6 +60,7 @@
             <table class="table">
                 <thead>
                     <tr>
+                        <th>ชื่อสมาชิก</th>
                         <th>สินค้า</th>
                         <th>ราคา</th>
                         <th>จำนวน</th>
@@ -71,6 +72,7 @@
                     <% if(orders.length > 0){ %>
                         <% orders.forEach(order => { %>
                         <tr>
+                            <td class="product-name"><%= order.member && order.member.name ? order.member.name : '-' %></td>
                             <td class="product-name"><%= order.product_name %></td>
                             <td><%= order.price.toLocaleString() %> บาท</td>
                             <td><%= order.qty %></td>
