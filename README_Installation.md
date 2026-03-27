@@ -8,7 +8,11 @@
 ## ขั้นตอนการติดตั้ง
 
 ### 1. Clone โปรเจค
+<<<<<<< HEAD
 git clone https://github.com/6811850001-bot/k-shop.git 
+=======
+git clone https://github.com/6811850001-bot/k-shop.git
+>>>>>>> 39707fb467f50c280d6707f1bb698d417c6135e8
 cd k-shop
 
 ### 2. ติดตั้ง Dependencies
@@ -27,7 +31,7 @@ npm install
   - employees
 
 ### 4. รันโปรเจค
-node app.js
+node npm start
 
 ### 5. เปิดเบราว์เซอร์
 http://localhost:8080
