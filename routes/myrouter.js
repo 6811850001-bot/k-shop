@@ -210,7 +210,6 @@ router.post("/register", async (req, res)=>{
         await newMember.save()
         res.redirect("/login")
     } catch (error){
-
         res.render("register/regisindex", { error: "Error registering user" })  
     }
 })

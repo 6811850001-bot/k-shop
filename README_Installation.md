@@ -8,7 +8,7 @@
 ## ขั้นตอนการติดตั้ง
 
 ### 1. Clone โปรเจค
-git clone https://github.com/ชื่อuser/k-shop.git
+git clone https://github.com/6811850001-bot/k-shop.git 
 cd k-shop
 
 ### 2. ติดตั้ง Dependencies

@@ -24,6 +24,7 @@ router.post('/add', async (req, res) => {
             name: req.body.name,
             gender: req.body.gender,
             position: req.body.position,
+            role: req.body.position,
             phone: req.body.phone,
             email: req.body.email,
             salary: req.body.salary,
@@ -59,6 +60,7 @@ router.post('/update', async (req, res) => {
             name: req.body.name,
             gender: req.body.gender,
             position: req.body.position,
+            role: req.body.position,
             phone: req.body.phone,
             email: req.body.email,
             salary: req.body.salary
